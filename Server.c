@@ -6,8 +6,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "UrlFilter.c"
 #define MAX 80
-#define PORT 8080
+#define PORT 8000
 #define SA_IN struct sockaddr_in
 #define SA struct sockaddr
 
@@ -57,11 +58,15 @@ void handle_connection(int client_socket){
         if(buffer[msgsize-1] == '\n') break;
     }
 
-    send(client_socket,"HTTP/1.1 200 OK\r\n\r\n<html>\n\r<body>\n\r\rhello\n\r</body>\n</html>",strlen("HTTP/1.1 200 OK\r\n\r\n<html>\n\r<body>\n\r\rhello\n\r</body>\n</html>"),0);
-    printf("connected");
+    char arg[100];
+    Find_Argument(buffer,arg);
+    printf("%s",arg);
+    char str[10000];
     buffer[msgsize-1] = 0;
-
+    sprintf(str,"HTTP/1.1 200 OK\r\n\r\n<html>\n\r<body>\n\r\r%s\n\r</body>\n</html>", buffer);
+    send(client_socket,str,strlen(str),0);
     printf("Request :%s\n",buffer);
+
     close(client_socket);
 }
 
