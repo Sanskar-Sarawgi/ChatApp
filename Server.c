@@ -48,7 +48,7 @@ int accept_new_connection(int server_socket){
     return client_socket;
 }
 
-void handle_connection(int client_socket){
+void handle_request(int client_socket){
     char buffer[BUFSIZ];
     size_t bytes_read;
     int msgsize = 0;
@@ -58,12 +58,14 @@ void handle_connection(int client_socket){
         if(buffer[msgsize-1] == '\n') break;
     }
 
+
     char arg[100];
     Find_Argument(buffer,arg);
-    printf("%s",arg);
     char str[10000];
     buffer[msgsize-1] = 0;
     sprintf(str,"HTTP/1.1 200 OK\r\n\r\n<html>\n\r<body>\n\r\r%s\n\r</body>\n</html>", buffer);
+    send(client_socket,str,strlen(str),0);
+    sleep(10);
     send(client_socket,str,strlen(str),0);
     printf("Request :%s\n",buffer);
 
